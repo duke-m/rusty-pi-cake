@@ -1,4 +1,8 @@
+![Rusty Pi](https://github.com/user-attachments/assets/64240465-e471-4637-a17e-6cbb64eaafe1)
 # Pi Cake: Leptos WebAssembly Tutorial / Playground
+
+> [!WARNING]
+> How long does it take to measure &pi;?
 
 A simple demonstration for using Rust with Leptos in a web application compiled to WebAssembly. Not for production, just to get into the topic, especially if you're new to Rust and Leptos.
 
@@ -38,10 +42,10 @@ This application builds Rust code into WebAssembly. It demonstrates:
    # or
    make server
    ```
-   For optimal performance, run with the release flag:
-    ```sh
-    trunk serve --open --release
-    ```
+
+> [!TIP]
+> For optimal performance, run with the release flag:
+`sh trunk serve --open --release`
 
 ## Building for Production
 
