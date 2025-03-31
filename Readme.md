@@ -1,5 +1,5 @@
 ![Rusty Pi](https://github.com/user-attachments/assets/64240465-e471-4637-a17e-6cbb64eaafe1)
-# Pi Cake: Leptos WebAssembly Tutorial / Playground
+# Pi Cake: Leptos WebAssembly Learning Template / Playground
 
 > [!WARNING]
 > How long does it take to measure &pi;?
