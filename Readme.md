@@ -2,6 +2,9 @@
 
 A simple demonstration for using Rust with Leptos in a web application compiled to WebAssembly. Not for production, just to get into the topic, especially if you're new to Rust and Leptos.
 
+![rusty screenshot](https://github.com/user-attachments/assets/6c703f14-7307-412f-ad04-bdfffbce7e51)
+
+
 ## Overview
 
 This application builds Rust code into WebAssembly. It demonstrates:
