@@ -1,0 +1,6 @@
+[tools]
+tailwindcss = "4.0.17"
+
+[build]
+# target = "static/index.html" doesn't work currently as expected, see issues on GitHub about this
+minify = "on_release" # minify css + html when --release

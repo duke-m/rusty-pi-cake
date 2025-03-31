@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@tailwind utilities;
+
+@theme {
+  --color-mycolor: #3ab7bf;
+}
+
+@layer components {
+  p {
+    @apply p-2;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-center text-4xl uppercase font-black p-4;
+  }
+
+  body {
+    @apply bg-gray-800 text-mycolor;
+    @apply text-2xl lg:text-lg;
+  }
+
+  body>picture,
+  button,
+  p,
+  progress,
+  div,
+  input {
+    @apply block;
+    @apply m-auto;
+    @apply text-center;
+  }
+
+  input,
+  button {
+    @apply p-4 mt-4;
+    @apply bg-mycolor text-white;
+    @apply hover:bg-amber-100 hover:text-black hover:shadow-sm;
+    @apply shadow-lg shadow-black rounded-lg;
+  }
+
+  button {
+    @apply cursor-pointer capitalize;
+  }
+
+  img {
+    @apply h-24;
+    @apply w-auto;
+    @apply m-auto;
+  }
+
+  dt {
+    @apply font-bold pt-4 capitalize after:content-[':'];
+  }
+
+  label {
+    @apply sr-only;
+  }
+
+}
+
+@layer utilities {
+
+  .my-group-precision-hover {
+    @apply text-gray-500 invisible transition transition-all delay-150 duration-300 ease-in-out group-hover/precision:visible group-hover/precision:text-mycolor;
+  }
+
+  .red {
+    @apply text-red-500;
+  }
+
+  .biggy {
+    @apply absolute top-0 left-0 h-full w-full z-10 backdrop-blur-sm;
+    div {
+      @apply h-screen flex justify-center items-center bg-radial from-mycolor p-7;
+
+      h1,
+      h2,
+      h3 {
+        @apply text-black ;
+      }
+    }
+  }
+}
