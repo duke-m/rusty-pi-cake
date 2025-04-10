@@ -26,25 +26,26 @@
 //! You can generate the documentation with `cargo doc --open`.
 //! If you prefer you can include private items with `cargo doc --document-private-items --open` (might be preferred for learning purposes).
 
-use components::{CalcModal, PrecisionInput, ProgressBar, ReLang, ReTitle};
-use laborer::{Laborer, WorkerCommand, WorkerResponse};
 use leptos::{logging::log, prelude::*};
 use rust_i18n::t;
 use wasm_bindgen::prelude::Closure;
 use web_sys::MessageEvent;
-
+// Single-threaded reference-counting pointers. 'Rc' stands for 'Reference Counted'.
+// We need for the worker to be shared between the view and the button click handler:
 use std::rc::Rc;
+use web_time::Instant;
 
-pub mod types;
-use types::*;
-mod constants;
+use components::{CalcModal, PrecisionInput, ProgressBar, ReLang, ReTitle};
 use constants::*;
-mod calculate;
-mod helpers;
-use helpers::delayed_execution;
+use laborer::{Laborer, WorkerCommand, WorkerResponse};
+use types::*;
 pub mod laborer;
 
+mod calculate;
 mod components;
+mod constants;
+mod helpers;
+pub mod types;
 
 // Load the locales from the locales directory.
 rust_i18n::i18n!("locales");
@@ -53,6 +54,9 @@ rust_i18n::i18n!("locales");
 fn setup_worker(
     result: WriteSignal<TApproximation>,
     iteration: WriteSignal<TPrecision>,
+    calculating: WriteSignal<bool>,
+    time: ReadSignal<Instant>,
+    duration: WriteSignal<f64>,
 ) -> Rc<Laborer> {
     // Set up the worker outside the view.
     // Rc is a reference counted pointer, which allows us to share the worker between the view and the button click handler.
@@ -67,7 +71,12 @@ fn setup_worker(
                 iteration.set(val.iteration);
             }
             WorkerResponse::Pong => log!("Got pong"),
-            WorkerResponse::Ready => log!("Worker is ready!"),
+            WorkerResponse::Ready => {
+                duration.set(time.get().elapsed().as_secs_f64());
+                #[cfg(debug_assertions)]
+                log!("Worker is ready!");
+                calculating.set(false);
+            }
         }
     });
     let worker = Rc::new(Laborer::new(WORKER_LOADER_URL, onmessage_callback));
@@ -82,12 +91,19 @@ fn setup_worker(
 pub fn App() -> impl IntoView {
     // create updatable signals for the duration, value/approximation, precision, and calculating state
     let (duration, set_duration) = signal(0.0);
+    let (time, set_time) = signal(Instant::now());
     let (value, set_value) = signal(0.0 as TApproximation);
     let (precision, set_precision) = signal(DEFAULT_PRECISION);
     let (calculating, set_calculating) = signal(false);
     let (iteration, set_iteration) = signal(0 as TPrecision);
 
-    let worker = setup_worker(set_value, set_iteration);
+    let worker = setup_worker(
+        set_value,
+        set_iteration,
+        set_calculating,
+        time,
+        set_duration,
+    );
 
     // Clone the worker for button click
     let worker_for_click = Rc::clone(&worker);
@@ -115,17 +131,14 @@ pub fn App() -> impl IntoView {
 
         <button
             on:click=move |_| {
+                set_time.set(Instant::now());
                 let worker = Rc::clone(&worker_for_click);
-                let precision = precision.get(); // Extract as plain type
-                delayed_execution(move || {
-                    worker.send_command(WorkerCommand::CalculatePi(precision));
-                    *set_calculating.write() = true;
-                });
-            }
-        >
+                worker.send_command(WorkerCommand::CalculatePi(precision.get()));
+                *set_calculating.write() = true;
+            }>
             {t!("start")}
         </button>
-
+        <Show when=move || (value.get() > 0.0)>
         <p>
         <dl>
             <dt>{t!("approximation")}</dt>
@@ -133,8 +146,10 @@ pub fn App() -> impl IntoView {
             </dl>
         <dl>
             <dt>{t!("duration")}</dt>
+
             <dd>{move || format!("{:.4}", duration.get())}</dd>
         </dl>
         </p>
+        </Show>
     }
 }
