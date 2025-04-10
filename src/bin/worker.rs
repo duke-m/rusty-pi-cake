@@ -1,9 +1,21 @@
 //! This is a Web Worker that handles messages from the main thread.
 //! It processes commands and sends back responses.
 use leptos::logging::log;
-use wasm_bindgen::{prelude::*, JsCast};
+use leptos_demo::{
+    laborer::*,
+    types::{TApproximation, TPrecision},
+};
+use wasm_bindgen::{JsCast, prelude::*};
 use web_sys::{DedicatedWorkerGlobalScope, MessageEvent};
-use leptos_demo::laborer::*;
+
+#[inline(always)]
+fn base_calculation(n: TPrecision) -> TApproximation {
+    let mut z = 1.0 / (2 * n + 1) as f64;
+    if n % 2 == 1 {
+        z = -z;
+    }
+    z
+}
 
 fn main() {
     #[cfg(debug_assertions)]
@@ -32,57 +44,50 @@ fn main() {
         log!("Worker received command: {}", command.to_string());
 
         // Process command
-        let response = match command {
-            WorkerCommand::Add(a, b) => {
-                let result = a + b;
-                WorkerResponse::Result(WorkerResult::new(result as f64, 0))
-            },
-            WorkerCommand::Multiply(a, b) => {
-                let result = a * b;
-                WorkerResponse::Result(WorkerResult::new(result as f64, 0))
-            },
+        let match_result: Option<WorkerResponse> = match command {
+            WorkerCommand::Add(a, b) => 
+                Some(WorkerResponse::Result(WorkerResult::new((a + b) as f64, 0))),
+            WorkerCommand::Multiply(a, b) => 
+                Some(WorkerResponse::Result(WorkerResult::new((a * b) as f64, 0))),
             WorkerCommand::CalculatePi(precision) => {
                 // Pi calculation logic here
-                let mut result: f64 = 0.0;
-                
+                let mut result: TApproximation = 0.0;
+                let check_step: TPrecision = (precision-2).pow(10); // report back from time to time
+
                 for n in 0..precision.pow(10) {
-                    let mut z = 1.0 / (2 * n + 1) as f64;
-                    if n % 2 == 1 {
-                        z = -z;
-                    }
-                    result += z;
-                    
-                    if n % 100000 == 0 {
+                    result += base_calculation(n);
+
+                    if n % check_step == 0 {
                         #[cfg(debug_assertions)]
                         log!("{}: {}", n, result);
-                        
                         // Send intermediate result
-                        let progress_response = WorkerResponse::Result(
-                            WorkerResult::new(4.0 * result, n as u64)
-                        );
+                        let progress_response =
+                            WorkerResponse::Result(WorkerResult::new(4.0 * result, n as u64));
                         let js_value = serde_wasm_bindgen::to_value(&progress_response).unwrap();
                         scope_clone.post_message(&js_value).unwrap();
                     }
                 }
-                
-                WorkerResponse::Result(WorkerResult::new(4.0 * result, precision as u64))
-            },
-            WorkerCommand::Ping => WorkerResponse::Pong,
+                Some(WorkerResponse::Ready)
+            }
+            WorkerCommand::Ping => Some(WorkerResponse::Pong),
             WorkerCommand::Initialize => {
                 #[cfg(debug_assertions)]
                 log!("Worker initialized");
-                WorkerResponse::Ready
+                Some(WorkerResponse::Ready)
             }
         };
 
-        // Send response using serde_wasm_bindgen
-        let response_js = serde_wasm_bindgen::to_value(&response).unwrap();
-        scope_clone.post_message(&response_js).unwrap();
+        // send response if there is one:
+        if let Some(response) = match_result {
+            #[cfg(debug_assertions)]
+            log!("Sending match response: {:?}", response);
+            let js_value = serde_wasm_bindgen::to_value(&response).unwrap();
+            scope_clone.post_message(&js_value).unwrap();
+        }
     }) as Box<dyn Fn(MessageEvent)>);
-    
+
     scope.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
     onmessage.forget();
-    
 
     // Send ready message
     let ready_msg = WorkerResponse::Ready;
