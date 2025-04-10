@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Leptos WASM Playground</title>
-    <link data-trunk rel="rust" data-wasm-opt="4" data-keep-debug=false />
+    <link data-trunk rel="rust" href="Cargo.toml" data-wasm-opt="z" data-bin="leptos-demo" data-type="main" />
+    <link data-trunk rel="rust" href="Cargo.toml" data-wasm-opt="z" data-bin="worker" data-type="worker" data-loader-shim data-bindgen-target="web" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link data-trunk rel="tailwind-css" href="/style/style.scss" />
 </head>
