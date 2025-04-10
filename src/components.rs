@@ -54,16 +54,11 @@ pub fn PrecisionInput(set_precision: WriteSignal<TPrecision>) -> impl IntoView {
 }
 
 #[component]
-pub fn ProgressBar(
-    iteration: ReadSignal<TPrecision>,
-    iteration_max: TPrecision,
-) -> impl IntoView {
+pub fn ProgressBar(iteration: ReadSignal<TPrecision>, iteration_max: TPrecision) -> impl IntoView {
     view! {
-        <div class="progress-bar">
-            <progress 
-                value=move || iteration.get()
-                max=iteration_max />
-        </div>
+        <progress
+            value=move || iteration.get()
+            max=iteration_max />
     }
 }
 
