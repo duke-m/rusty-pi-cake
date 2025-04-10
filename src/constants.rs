@@ -1,3 +1,4 @@
+//! Constants for the application, i.e. for all modules.
 use crate::types::TPrecision;
 
 /// Default precision for the calculation. The time needed to calculate the approximation is
@@ -11,3 +12,6 @@ pub const DEFAULT_PRECISION: TPrecision = 7;
 
 /// Default delay for letting the browser simply paint the UI before blocking, in milliseconds.
 pub const DELAY_MS: u64 = 20;
+
+/// Where is the worker loader located?
+pub const WORKER_LOADER_URL: &str = "worker_loader.js";
