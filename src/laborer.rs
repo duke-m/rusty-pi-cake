@@ -71,26 +71,20 @@ impl Laborer {
         let _ = self.onmessage_callback;
     }
 
+    pub fn set_callback(&mut self, callback: Closure<dyn FnMut(MessageEvent)>) {
+        self.onmessage_callback = callback;
+    }
+
     pub fn is_ready(&self) -> bool {
         matches!(self.state, WorkerState::Ready)
     }
 
     /// Create a new worker aka Laborer instance.
-    pub fn new(worker_script_url: &str) -> Self {
+    pub fn new(worker_script_url: &str, onmessage_callback: Closure<dyn FnMut(MessageEvent)>) -> Self {
         let options = WorkerOptions::new();
         // using module workers, see also https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker
         options.set_type(WorkerType::Module);
         let worker = Worker::new_with_options(&worker_script_url, &options).expect("failed to spawn worker"); 
-        let onmessage_callback =
-            Closure::<dyn FnMut(MessageEvent)>::new(move |event: MessageEvent| {
-                let js_value = event.data();
-                let response: WorkerResponse = serde_wasm_bindgen::from_value(js_value).unwrap();
-                match response {
-                    WorkerResponse::Result(val) => log!("Got result: {}", val),
-                    WorkerResponse::Pong => log!("Got pong"),
-                    WorkerResponse::Ready => log!("Worker is ready"),
-                }
-            });
         worker.set_onmessage(Some(onmessage_callback.as_ref().unchecked_ref()));
 
         Self {

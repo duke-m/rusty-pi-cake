@@ -26,10 +26,12 @@
 //! You can generate the documentation with `cargo doc --open`.
 //! If you prefer you can include private items with `cargo doc --document-private-items --open` (might be preferred for learning purposes).
 
-use components::{CalcModal, PrecisionInput, ReLang, ReTitle};
-use leptos::prelude::*;
+use components::{CalcModal, PrecisionInput, ProgressBar, ReLang, ReTitle};
+use laborer::{Laborer, WorkerCommand, WorkerResponse};
+use leptos::{logging::log, prelude::*};
 use rust_i18n::t;
-use laborer::{Laborer, WorkerCommand};
+use wasm_bindgen::prelude::Closure;
+use web_sys::MessageEvent;
 
 use std::rc::Rc;
 
@@ -47,25 +49,48 @@ mod components;
 // Load the locales from the locales directory.
 rust_i18n::i18n!("locales");
 
+/// This function sets up the worker and registers the onmessage callback.
+fn setup_worker(
+    result: WriteSignal<TApproximation>,
+    iteration: WriteSignal<TPrecision>,
+) -> Rc<Laborer> {
+    // Set up the worker outside the view.
+    // Rc is a reference counted pointer, which allows us to share the worker between the view and the button click handler.
+    let onmessage_callback = Closure::<dyn FnMut(MessageEvent)>::new(move |event: MessageEvent| {
+        let js_value = event.data();
+        let response: WorkerResponse = serde_wasm_bindgen::from_value(js_value).unwrap();
+        match response {
+            WorkerResponse::Result(val) => {
+                #[cfg(debug_assertions)]
+                log!("Got result: {}", val);
+                result.set(val.result);
+                iteration.set(val.iteration);
+            }
+            WorkerResponse::Pong => log!("Got pong"),
+            WorkerResponse::Ready => log!("Worker is ready!"),
+        }
+    });
+    let worker = Rc::new(Laborer::new(WORKER_LOADER_URL, onmessage_callback));
+    worker.send_command(WorkerCommand::Initialize);
+    worker.forget(); // Keep closures alive
+    worker
+}
 
 /// This is the main App component, which will be mounted to the body of the HTML document.
 /// It will calculate Pi/4 with a given precision and show the duration and the approximation.
 #[component]
 pub fn App() -> impl IntoView {
-    // Set up the worker outside the view
-    let worker = Rc::new(Laborer::new(WORKER_LOADER_URL));
-    worker.send_command(WorkerCommand::Initialize);
-    worker.forget(); // Keep closures alive
-
-    // worker.forget();
     // create updatable signals for the duration, value/approximation, precision, and calculating state
     let (duration, set_duration) = signal(0.0);
     let (value, set_value) = signal(0.0 as TApproximation);
     let (precision, set_precision) = signal(DEFAULT_PRECISION);
     let (calculating, set_calculating) = signal(false);
+    let (iteration, set_iteration) = signal(0 as TPrecision);
 
-        // Clone the worker for button click
-        let worker_for_click = Rc::clone(&worker);
+    let worker = setup_worker(set_value, set_iteration);
+
+    // Clone the worker for button click
+    let worker_for_click = Rc::clone(&worker);
 
     view! {
         // set the language of the HTML document dynamically, you can use signals to reactively change the language and other meta tags
@@ -77,10 +102,12 @@ pub fn App() -> impl IntoView {
         when=move || calculating.get()
         // needs no fallback=|| {}
         >
-        <CalcModal />
-        {
-
-        }
+        <CalcModal>
+        <ProgressBar
+            iteration=iteration
+            iteration_max=precision.get().pow(10)
+            />
+        </CalcModal>
         </Show>
         <h1>"Rust WASM Pi Cake"</h1>
 
