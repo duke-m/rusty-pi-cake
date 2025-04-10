@@ -2,12 +2,11 @@
 //! It also defines the WorkerCommand and WorkerResponse enums, which are used to communicate with the worker.
 
 use std::fmt::{Display, Formatter};
-use leptos::logging::log;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{JsCast, prelude::Closure};
 use web_sys::{MessageEvent, Worker, WorkerOptions, WorkerType};
 
-use crate::types::TPrecision;
+use crate::types::{TApproximation, TPrecision};
 
 /// The WorkerCommand enum defines the commands that can be sent to the worker.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
@@ -22,8 +21,8 @@ pub enum WorkerCommand {
 /// The WorkerResult holds the result, like the value of Pi, and the iteration number.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub struct WorkerResult {
-    pub result: f64,
-    pub iteration: u64,
+    pub result: TApproximation,
+    pub iteration: TPrecision,
 }
 
 /// The WorkerResponse enum defines the responses that can be sent back from the worker to the main thread.
@@ -51,7 +50,7 @@ impl Display for WorkerResult {
 }
 
 impl WorkerResult {
-    pub fn new(result: f64, iteration: u64) -> Self {
+    pub fn new(result: TApproximation, iteration: TPrecision) -> Self {
         WorkerResult { result, iteration }
     }
 }
