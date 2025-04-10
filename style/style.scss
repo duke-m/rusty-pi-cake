@@ -75,9 +75,9 @@
   }
 
   .biggy {
-    @apply absolute top-0 left-0 h-full w-full z-10 backdrop-blur-sm;
+    @apply absolute top-0 left-0 h-full w-full z-10 backdrop-blur-sm cursor-progress;
     div {
-      @apply h-screen flex justify-center items-center bg-radial from-mycolor p-7;
+      @apply h-screen flex flex-col justify-center text-center justify-center items-center bg-radial from-mycolor p-7;
 
       h1,
       h2,
