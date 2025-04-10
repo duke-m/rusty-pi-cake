@@ -1,3 +1,4 @@
+//! This module contains the logic to calculate Pi/4 using the Leibniz formula.
 use leptos::{
     logging::log,
     prelude::{Get, ReadSignal, Write, WriteSignal},
@@ -11,18 +12,9 @@ use web_time::Instant;
 
 use crate::types::{TApproximation, TPrecision};
 
-#[cfg(test)]
-mod tests;
-
-/// Provide a wrapper to log to the console via the leptos logging system.
-fn logger(s: &str) {
-    log!("{}", s);
-}
-
 /// Do the expensive calculation, approximating Pi/4, and return the result and the duration.
 /// Optionally include a logger function to log the progress.
-fn calculate(precision: TPrecision, logger: Option<&impl Fn(&str)>) -> (TApproximation, f64)
-  {
+fn calculate(precision: TPrecision, logger: Option<&impl Fn(&str)>) -> (TApproximation, f64) {
     let start = Instant::now();
     if logger.is_some() {
         logger.unwrap()("Calculating Pi/4...");
@@ -56,4 +48,39 @@ pub fn calculate_and_update_signals(
     *set_duration.write() = duration;
     *set_value.write() = value;
     *set_calculating.write() = false;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_calculates_correctly() {
+        let precision = 1;
+        let (result, duration) = calculate(precision, None::<&fn(&str)>);
+        assert_eq!(result, 4.0);
+        assert!(duration < 1.0);
+    }
+
+    #[test]
+    fn it_calculates_correctly_with_logger() {
+        let precision = 1;
+        let (result, duration) = calculate(precision, Some(&logger));
+        assert_eq!(result, 4.0);
+        assert!(duration < 1.0);
+    }
+
+    #[test]
+    fn it_calculates_correctly_with_higher_precision() {
+        let precision = 5;
+        let (result, duration) = calculate(precision, None::<&fn(&str)>);
+        assert!(result > 3.14159);
+        assert!(result < 3.14160);
+        assert!(duration > 0.0001);
+    }
+}
+
+/// Provide a wrapper to log to the console via the leptos logging system.
+fn logger(s: &str) {
+    log!("{}", s);
 }
