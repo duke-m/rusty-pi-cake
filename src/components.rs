@@ -1,9 +1,9 @@
 //! This module contains the leptos components used in the application.
+use constants::*;
 use leptos::prelude::*;
 use leptos_meta::{Html, Title, provide_meta_context};
 use rust_i18n::t;
 use types::*;
-use constants::*;
 
 use crate::{constants, types};
 
@@ -32,21 +32,9 @@ pub fn ReTitle(text: String) -> impl IntoView {
     }
 }
 
-/// The CalcModal component is a simple modal that shows a "Calculating" message.
-#[component]
-pub fn CalcModal() -> impl IntoView {
-    view! {
-    <div class="biggy">
-    <div><h3>{t!("calculating")}</h3></div>
-    </div>
-    }
-}
-
 /// Precision input component.
 #[component]
-pub fn PrecisionInput(
-    set_precision: WriteSignal<TPrecision>
-) -> impl IntoView {
+pub fn PrecisionInput(set_precision: WriteSignal<TPrecision>) -> impl IntoView {
     view! {
         // input field for the precision, use TW's group hover
         <div class="group/precision">
@@ -62,5 +50,29 @@ pub fn PrecisionInput(
         </div>
         // label for screen reader only
         <label for="precision_input">{t!("precision")}</label>
+    }
+}
+
+#[component]
+pub fn ProgressBar(
+    iteration: ReadSignal<TPrecision>,
+    iteration_max: TPrecision,
+) -> impl IntoView {
+    view! {
+        <div class="progress-bar">
+            <progress 
+                value=move || iteration.get()
+                max=iteration_max />
+        </div>
+    }
+}
+
+/// Displays a `render_prop` and some children within markup.
+#[component]
+pub fn CalcModal(children: Children) -> impl IntoView {
+    view! {
+        <div class="biggy">
+        <div><h3>{t!("calculating")}</h3>{children()}</div>
+        </div>
     }
 }
