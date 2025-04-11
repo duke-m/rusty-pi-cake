@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: latest
       - name: set up missing tailwindcss
-        run: npm install -g tailwindcss@4
+        run: npm install -g tailwind@v4 tailwindcss@4
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.21.13/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - name: Build with Trunk
