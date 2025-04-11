@@ -103,6 +103,7 @@ impl Laborer {
 }
 
 /// This enum represents the state of the worker.
+#[allow(dead_code)]
 #[derive(Clone)]
 enum WorkerState {
     Ready,
