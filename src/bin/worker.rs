@@ -16,7 +16,7 @@ use web_sys::{DedicatedWorkerGlobalScope, MessageEvent};
 /// `#[inline(always)]` is used to suggest to the compiler to inline this function for performance.
 #[inline(always)]
 fn base_calculation(n: TPrecision) -> TApproximation {
-    let mut z = 1.0 / (2 * n + 1) as f64;
+    let mut z = 1.0 / (2 * n + 1) as TApproximation;
     if n % 2 == 1 {
         z = -z;
     }
