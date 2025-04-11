@@ -50,7 +50,10 @@ jobs:
           mv trunk ci-tools
           chmod +x ci-tools/trunk
       - name: Set PATH to ci-tools
-        run: echo "export PATH=\$PATH:`pwd`/ci-tools" >> $GITHUB_ENV
+        run: |
+          echo "export PATH=\$PATH:`pwd`/ci-tools" >> $GITHUB_ENV
+          echo $PATH | grep ci-tools
+          echo $GITHUB_ENV | grep ci-tools
       - name: Make sure tools exist
         run: |
           test -f ci-tools/tailwindcss || (echo "❌ tailwindcss not found!" && exit 1)
