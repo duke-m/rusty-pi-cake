@@ -1,6 +1,5 @@
 //! This module defines the Laborer struct, which represents a worker that can perform calculations.
 //! It also defines the WorkerCommand and WorkerResponse enums, which are used to communicate with the worker.
-
 use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::{JsCast, prelude::Closure};
@@ -9,6 +8,7 @@ use web_sys::{MessageEvent, Worker, WorkerOptions, WorkerType};
 use crate::types::{TApproximation, TPrecision};
 
 /// The WorkerCommand enum defines the commands that can be sent to the worker.
+/// Only CalculatePi is used in this example, the rest are just for demonstration.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum WorkerCommand {
     Initialize,
