@@ -1,3 +1,4 @@
+![workflow](https://github.com/duke-m/rusty-pi-cake/actions/workflows/build_and_deploy_to_pages.yml/badge.svg)
 ![Rusty Pi](https://github.com/user-attachments/assets/64240465-e471-4637-a17e-6cbb64eaafe1)
 # Pi Cake: Full Rust WebAssembly Stack Demonstration with a WASM Worker
 
@@ -5,19 +6,10 @@
 > How long does it take to measure &pi;?
 
 A simple demo of a WebAssembly app together with a WebAssembly worker using Leptos, rust_i18n,
-Tailwind 4 and web-sys, i.e. a full Rust WebAssembly stack.
+Tailwind 4 and web-sys, i.e. a full Rust WebAssembly stack. [See it in action!](https://duke-m.github.io/rusty-pi-cake/)
 
 It stupidly calculates Pi using the Leibniz formula and shows the result in a modal.
 It does so by sending messages to the worker and receiving intermediate results and the final result.
-
-## How it works
-
-The app uses a WebAssembly worker to do the heavy lifting of calculating Pi.
-After the worker is created it is passed a closure that handles messages from the worker.
-The worker sends messages back to the main thread, the main thread receives these messages and updates the UI accordingly.
-That's why the UI keeps responsive while the worker is doing the heavy lifting.
-Without the worker the UI would be blocked.
-The WASM worker itself is loaded using a separate JS file.
 
 ![PI2](https://github.com/user-attachments/assets/b65edb14-e910-4713-83a5-6920bf84b898)
 
@@ -30,6 +22,16 @@ This application builds Rust code into WebAssembly. It demonstrates:
 - Internationalization with rust-i18n
 - Tailwind v4 SASS/CSS styling
 - Web-sys for creating the WASM worker and communication between main thread and worker
+- basic CI/CD deploying to [GitHub Pages](https://duke-m.github.io/rusty-pi-cake/)
+
+## How it works
+
+The app uses a WebAssembly worker to do the heavy lifting of calculating Pi.
+After the worker is created it is passed a closure that handles messages from the worker.
+The worker sends messages back to the main thread, the main thread receives these messages and updates the UI accordingly.
+That's why the UI keeps responsive while the worker is doing the heavy lifting.
+Without the worker the UI would be blocked.
+The WASM worker itself is loaded using a separate JS file.
 
 ## Features
 
