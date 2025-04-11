@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+#  pull_request:
+#    branches: ["main"]
 
 permissions:
   contents: read
@@ -42,8 +42,8 @@ jobs:
         with:
           node-version: latest
 
-      - name: Install Tailwind via NPM (optional if you use binary)
-        run: npm install -g tailwind@v4 tailwindcss@4
+#      - name: Install Tailwind via NPM (optional if you use binary)
+#        run: npm install -g tailwind@v4 tailwindcss@4
 
       - name: Create ci-tools directory
         run: mkdir ci-tools
