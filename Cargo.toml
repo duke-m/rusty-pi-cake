@@ -1,12 +1,12 @@
 [package]
 name = "leptos-demo"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [profile.release]
 opt-level = 'z' # z: size (and speed)
-lto = true
-codegen-units = 1
+lto = true # no LTO is performed if codegen units is 1 or opt-level is 0
+codegen-units = 1 # give LLVM the opportunity to optimize better
 
 [dependencies]
 console_error_panic_hook = "0.1.7"
@@ -14,3 +14,22 @@ leptos = { version = "0.7.8", features = ["csr"] }
 web-time = "1.1.0"
 rust-i18n = "3"
 leptos_meta = "0.7.8"
+js-sys = "0.3"
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = [
+    "console",
+    "DedicatedWorkerGlobalScope",
+    "Document",
+    "HtmlElement",
+    "MessageEvent",
+    "Node",
+    "Text",
+    "Url",
+    "Window",
+    "Worker",
+    "WorkerOptions",
+    "WorkerType",
+] }
+# for ser-de in the worker
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
