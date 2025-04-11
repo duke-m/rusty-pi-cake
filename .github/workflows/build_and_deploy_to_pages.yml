@@ -51,7 +51,7 @@ jobs:
           chmod +x ci-tools/trunk
       - name: Set PATH to ci-tools
         run: |
-          echo "export PATH=\$PATH:`pwd`/ci-tools" >> $GITHUB_ENV
+          echo "export PATH=$(pwd)/ci-tools:$PATH" >> $GITHUB_ENV
           echo $PATH | grep ci-tools
           echo $GITHUB_ENV | grep ci-tools
       - name: Make sure tools exist
