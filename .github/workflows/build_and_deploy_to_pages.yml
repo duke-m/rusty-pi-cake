@@ -28,15 +28,35 @@ jobs:
         uses: actions/configure-pages@v5
       # Build with trunk-rs
       - name: Set up Rust
-        uses: dtolnay/rust-toolchain@nightly
+        uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
           toolchain: nightly-x86_64-unknown-linux-gnu
           components: rust-src
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+      - name: NPM tailwind
+        run: npm install -g tailwind@v4 tailwindcss@4
+      - name: Create ci-tools directory
+        run: mkdir ci-tools
+      - name: Get Tailwind via wget
+        run: |
+          wget -q -O ci-tools/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.3/tailwindcss-linux-x64
+          chmod +x ci-tools/tailwindcss
       - name: Download and install Trunk binary
-        run: wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.21.13/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+        run: |
+          wget -qO- https://github.com/trunk-rs/trunk/releases/download/v0.21.13/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+          mv trunk ci-tools
+          chmod +x ci-tools/trunk
+      - name: Set PATH to ci-tools
+        run: echo "PATH=$(pwd)/ci-tools:$PATH" >> $GITHUB_ENV
+      - name: Make sure tools exist
+        run: |
+          test -f ci-tools/tailwindcss || (echo "❌ tailwindcss not found!" && exit 1)
+          test -f ci-tools/trunk || (echo "❌ trunk not found!" && exit 1)
       - name: Build with Trunk
-        run: ./trunk build --release
+        run: trunk build --release
       - name: Check dist exists
         run: test -d dist || (echo "❌ dist/ folder not found!" && exit 1)
       - name: Upload static files as artifact
