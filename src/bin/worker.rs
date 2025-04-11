@@ -1,5 +1,7 @@
 //! This is a Web Worker that handles messages from the main thread.
 //! It processes commands and sends back responses.
+
+#[cfg(debug_assertions)]
 use leptos::logging::log;
 use leptos_demo::{
     laborer::*,
@@ -8,6 +10,10 @@ use leptos_demo::{
 use wasm_bindgen::{JsCast, prelude::*};
 use web_sys::{DedicatedWorkerGlobalScope, MessageEvent};
 
+/// The base calculation function for the Pi approximation.
+/// It uses the formula: 1/(2n+1) for odd n and -1/(2n+1) for even n.
+/// This is a simple implementation of the Leibniz formula for Pi.
+/// `#[inline(always)]` is used to suggest to the compiler to inline this function for performance.
 #[inline(always)]
 fn base_calculation(n: TPrecision) -> TApproximation {
     let mut z = 1.0 / (2 * n + 1) as f64;
@@ -23,9 +29,15 @@ fn main() {
     #[cfg(debug_assertions)]
     log!("worker starting");
 
+    // see also https://developer.mozilla.org/en-US/docs/Web/API/DedicatedWorkerGlobalScope
     let scope = DedicatedWorkerGlobalScope::from(JsValue::from(js_sys::global()));
     let scope_clone = scope.clone();
 
+    // Set up the worker to listen for messages
+    // and process commands. The worker will be passed a closure that handles messages from the main thread.
+    // We first Box the closure to put it on the heap for the worker to use, Closure::wrap is used to
+    // convert the closure into a JavaScript function/closure.
+    // The `move` keyword is used to capture the variables from the surrounding scope and move their ownership into the closure.
     let onmessage = Closure::wrap(Box::new(move |msg: MessageEvent| {
         #[cfg(debug_assertions)]
         log!("got message");
@@ -86,11 +98,36 @@ fn main() {
         }
     }) as Box<dyn Fn(MessageEvent)>);
 
+    // Set the onmessage handler for the worker, use as_ref() to convert the type into a shared reference
+    // of the (usually inferred) input type. See also https://doc.rust-lang.org/std/convert/trait.AsRef.html
+    // and https://rustwasm.github.io/wasm-bindgen/api/wasm_bindgen/trait.JsCast.html#method.unchecked_ref
     scope.set_onmessage(Some(onmessage.as_ref().unchecked_ref()));
     onmessage.forget();
 
-    // Send ready message
+    // Send serialized WorkerResponse::Ready message to the main thread
     let ready_msg = WorkerResponse::Ready;
     let js_value = serde_wasm_bindgen::to_value(&ready_msg).unwrap();
     scope.post_message(&js_value).unwrap();
+}
+
+/// some basic unit tests to show how tests are done,
+/// note that the tests are not run in the worker context which would require to use something like
+/// `wasm-bindgen-test` or `wasm-pack test`
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn base_calculation_is_correct() {
+        assert_eq!(base_calculation(0), 1.0);
+        assert_eq!(base_calculation(1), -0.3333333333333333);
+        assert_eq!(base_calculation(2), 0.2);
+        assert_eq!(base_calculation(3), -0.14285714285714285);
+    }
+
+    #[test]
+    fn worker_command_serializes() {
+        let command = WorkerCommand::Add(1, 2);
+        assert_eq!(command.to_string(), "Add(1, 2)");
+    }
 }
