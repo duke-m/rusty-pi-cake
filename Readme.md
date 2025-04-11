@@ -19,7 +19,7 @@ That's why the UI keeps responsive while the worker is doing the heavy lifting.
 Without the worker the UI would be blocked.
 The WASM worker itself is loaded using a separate JS file.
 
-![rusty screenshot](https://github.com/user-attachments/assets/6c703f14-7307-412f-ad04-bdfffbce7e51)
+![PI2](https://github.com/user-attachments/assets/b65edb14-e910-4713-83a5-6920bf84b898)
 
 ## Overview
 
