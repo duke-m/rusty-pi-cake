@@ -50,8 +50,9 @@ jobs:
           mv trunk ci-tools
           chmod +x ci-tools/trunk
       - name: Set PATH to ci-tools
+        run: echo "PATH=$(pwd)/ci-tools:$PATH" >> $GITHUB_ENV
+      - name: Debug Path
         run: |
-          echo "export PATH=$(pwd)/ci-tools:$PATH" >> $GITHUB_ENV
           echo $PATH | grep ci-tools
           echo $GITHUB_ENV | grep ci-tools
       - name: Make sure tools exist
