@@ -62,7 +62,7 @@ pub fn ProgressBar(iteration: ReadSignal<TPrecision>, iteration_max: TPrecision)
     }
 }
 
-/// Displays a `render_prop` and some children within markup.
+/// Displays a full screen information modal, shows how to use children nodes.
 #[component]
 pub fn CalcModal(children: Children) -> impl IntoView {
     view! {
