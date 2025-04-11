@@ -1,31 +1,16 @@
 //! # Pi Cake
-//! A simple example of calculating Pi using a Leptos web app, just for measuring the time it takes.
-//! This example uses the web_time crate to measure the time it takes to calculate Pi to compare it with ECMAScript.
-//! There is no progress bar to avoid overhead in the measurement (we just want the calculation).
-//!
-//! This is not meant to be used in production, it's just a demonstration of how to use Leptos (with client side rendering),
-//! especially when you're new to Rust. It will also demonstrate how to use Tailwind CSS and i18n (resp. L10n) in such an environment.
+//! A simple demo of a WebAssembly app together with a WebAssembly worker using Leptos, rust_i18n,
+//! Tailwind 4 and web-sys, i.e. a full Rust WebAssembly stack.
+//! It stupidly calculates Pi using the Leibniz formula and shows the result in a modal.
+//! It does so by sending messages to the worker and receiving intermediate results and the final result.
 //!
 //! ## How it works
-//! Most of the code will be executed in the browser using WebAssembly.
-//! The calculation is done in a blocking way, which is not recommended for web apps! To measure the time it takes to calculate Pi,
-//! we use the web_time crate, which is a wrapper around the Performance.now() function in the browser. While this sounds
-//! simple for someone coming from ECMAScript, it's not that obvious in Rust with the WASM target.
-//! The web_time crate only works with the wasm32-unknown-unknown.
-//!
-//! ## How to run
-//! You can run this example with the trunk package manager. Just install it with `cargo install trunk`.
-//! Install some dependencies with npm or yarn.
-//! Install the wasm32-unknown-unknown target with `rustup target add wasm32-unknown-unknown`.
-//!
-//! Now you can run the app with `trunk serve` and open it in your browser:
-//! `trunk serve --open` will build the app, bundle it and open it in your default browser.
-//! `trunk build --release` will build the app in release mode, you can combine it with serve, too.
-//!
-//! ## Generate documentation
-//! You can generate the documentation with `cargo doc --open`.
-//! If you prefer you can include private items with `cargo doc --document-private-items --open` (might be preferred for learning purposes).
-
+//! The app uses a WebAssembly worker to do the heavy lifting of calculating Pi.
+//! After the worker is created it is passed a closure that handles messages from the worker.
+//! The worker sends messages back to the main thread, the main thread receives these messages and updates the UI accordingly.
+//! That's why the UI keeps responsive while the worker is doing the heavy lifting.
+//! Without the worker the UI would be blocked.
+//! The WASM worker itself is loaded using a separate JS file.
 use leptos::{logging::log, prelude::*};
 use rust_i18n::t;
 use wasm_bindgen::prelude::Closure;
@@ -41,10 +26,8 @@ use laborer::{Laborer, WorkerCommand, WorkerResponse};
 use types::*;
 pub mod laborer;
 
-mod calculate;
 mod components;
 mod constants;
-mod helpers;
 pub mod types;
 
 // Load the locales from the locales directory.
