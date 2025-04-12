@@ -74,7 +74,7 @@ fn main() {
                         log!("{}: {}", n, result);
                         // Send intermediate result
                         let progress_response =
-                            WorkerResponse::Result(WorkerResult::new(4.0 * result, n as u64));
+                            WorkerResponse::Result(WorkerResult::new(4.0 * result, n));
                         let js_value = serde_wasm_bindgen::to_value(&progress_response).unwrap();
                         scope_clone.post_message(&js_value).unwrap();
                     }
