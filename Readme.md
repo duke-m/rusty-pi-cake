@@ -109,21 +109,23 @@ cargo doc --document-private-items --open
 make docs
 ```
 
+## The cons
+
+- size, especially when importing heavy libraries like RegEx (some apps instead call the browser API)
+- complexity of both build and run time
+
 # What could be next?
 
-- WASM is great but comes with large files
-- especially when importing heavy libraries like RegEx
-- call the API to use its built-ins and to compare against
-- End2End testing
-
-## PWA (Progressive Web App) functionality
-
-This should be quite straight-forward:
-
-- add service workers to intercept fetches and cache them
-- add a manifest.json
-- starting point could be [pwabuilder.com](https://www.pwabuilder.com/)
-- Read more about the [*why*](https://docs.pwabuilder.com/#/home/benefits-of-pwa)
+- [Server side rendering (SSR)](https://book.leptos.dev/getting_started/index.html)
+- offer in-app comparison of WASM and JS
+- [end-to-end testing](https://book.leptos.dev/testing.html#2-test-components-with-end-to-end-e2e-testing)
+  - like with [Playwright](https://playwright.dev/)
+  - or [Cucumber](https://cucumber.io/), for example
+- PWA (Progressive Web App) functionality, this should be quite straight-forward:
+  - add service workers to intercept fetches and cache them
+  - add a manifest.json
+  - starting point could be [pwabuilder.com](https://www.pwabuilder.com/)
+  - Read more about the [*why*](https://docs.pwabuilder.com/#/home/benefits-of-pwa)
 
 # License
 
