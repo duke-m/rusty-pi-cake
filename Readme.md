@@ -1,4 +1,5 @@
-![workflow](https://github.com/duke-m/rusty-pi-cake/actions/workflows/build_and_deploy_to_pages.yml/badge.svg)
+![workflow](https://github.com/duke-m/rusty-pi-cake/actions/workflows/build_and_deploy_to_pages.yml/badge.svg) ![workflow](https://github.com/duke-m/rusty-pi-cake/actions/workflows/security-audit.yml/badge.svg) [![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/) ![GitHub License](https://img.shields.io/github/license/duke-m/rusty-pi-cake)
+
 ![Rusty Pi](https://github.com/user-attachments/assets/64240465-e471-4637-a17e-6cbb64eaafe1)
 # Pi Cake: Full Rust WebAssembly Stack Demonstration with a WASM Worker
 
