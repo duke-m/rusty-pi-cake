@@ -46,7 +46,7 @@ The WASM worker itself is loaded using a separate JS file.
 - [Rust](https://www.rust-lang.org/tools/install) (2021 edition or newer)
 - [Trunk](https://trunkrs.dev/) (`cargo install trunk`)
 - WebAssembly target: `rustup target add wasm32-unknown-unknown`
-- Node.js and npm/yarn (for CSS processing)
+- ~~Node.js and npm/yarn (for CSS processing)~~ (Tailwind v4 comes included with a full tool chain)
 
 ## Getting Started
 
