@@ -4,10 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    tags: ["v*"]
-    paths: ["**/Cargo.toml"]
-  pull_request:
-    branches: ["main"]
     paths: ["**/Cargo.toml"]
   schedule:
     - cron: "42 3 * * *"
