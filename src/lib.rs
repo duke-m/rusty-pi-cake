@@ -11,6 +11,9 @@
 //! That's why the UI keeps responsive while the worker is doing the heavy lifting.
 //! Without the worker the UI would be blocked.
 //! The WASM worker itself is loaded using a separate JS file.
+
+// see https://github.com/rust-secure-code/safety-dance
+#![forbid(unsafe_code)]
 use leptos::{logging::log, prelude::*};
 use rust_i18n::t;
 use wasm_bindgen::prelude::Closure;
