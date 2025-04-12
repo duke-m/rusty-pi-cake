@@ -109,19 +109,26 @@ cargo doc --document-private-items --open
 make docs
 ```
 
-# What's Missing
-
-## Using the API to Call Javascript Functions
+# What could be next?
 
 - WASM is great but comes with large files
 - especially when importing heavy libraries like RegEx
 - call the API to use its built-ins and to compare against
 - End2End testing
 
-## License
+## PWA (Progressive Web App) functionality
+
+This should be quite straight-forward:
+
+- add service workers to intercept fetches and cache them
+- add a manifest.json
+- starting point could be [pwabuilder.com](https://www.pwabuilder.com/)
+- Read more about the [*why*](https://docs.pwabuilder.com/#/home/benefits-of-pwa)
+
+# License
 
 MIT
 
-## Acknowledgements
+# Acknowledgements
 
 Thanks to [Steve Klabnik](https://steveklabnik.com/), [Carol Nichols](https://github.com/carols10cents), [Chris Krycho](https://github.com/chriskrycho) and the Rust Community for the [Rust Book](https://doc.rust-lang.org/book/).
