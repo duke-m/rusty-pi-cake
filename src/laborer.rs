@@ -83,7 +83,7 @@ impl Laborer {
         let options = WorkerOptions::new();
         // using module workers, see also https://developer.mozilla.org/en-US/docs/Web/API/Worker/Worker
         options.set_type(WorkerType::Module);
-        let worker = Worker::new_with_options(&worker_script_url, &options).expect("failed to spawn worker"); 
+        let worker = Worker::new_with_options(worker_script_url, &options).expect("failed to spawn worker"); 
         worker.set_onmessage(Some(onmessage_callback.as_ref().unchecked_ref()));
 
         Self {
