@@ -2,10 +2,17 @@ name: Build and Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
+    inputs:
+      tailwind_install_method:
+        description: 'Install Tailwind via'
+        required: false
+        default: 'binary'
+        type: choice
+        options:
+          - binary
+          - npm
   push:
     branches: ["main"]
-#  pull_request:
-#    branches: ["main"]
 
 permissions:
   contents: read
@@ -21,6 +28,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      TAILWIND_INSTALL_METHOD: ${{ github.event.inputs.tailwind_install_method || 'binary' }}
 
     steps:
       - uses: actions/checkout@v4
@@ -42,13 +52,15 @@ jobs:
         with:
           node-version: latest
 
-#      - name: Install Tailwind via NPM (optional if you use binary)
-#        run: npm install -g tailwind@v4 tailwindcss@4
-
       - name: Create ci-tools directory
         run: mkdir ci-tools
 
+      - name: Install Tailwind via NPM
+        if: ${{ env.TAILWIND_INSTALL_METHOD == 'npm' }}
+        run: npm install -g tailwindcss@${{ env.TAILWIND_VERSION }}
+
       - name: Download Tailwind binary
+        if: ${{ env.TAILWIND_INSTALL_METHOD != 'npm' }}
         run: |
           wget -q -O ci-tools/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v${{ env.TAILWIND_VERSION }}/tailwindcss-linux-x64
           chmod +x ci-tools/tailwindcss
@@ -64,7 +76,7 @@ jobs:
 
       - name: Ensure tools exist
         run: |
-          test -f ci-tools/tailwindcss || (echo "❌ tailwindcss not found!" && exit 1)
+          which tailwindcss || (echo "❌ tailwindcss not found!" && exit 1)
           test -f ci-tools/trunk || (echo "❌ trunk not found!" && exit 1)
 
       - name: Build with Trunk
