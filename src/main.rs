@@ -1,4 +1,4 @@
-use leptos_demo::App;
+use rusty_pi_cake::App;
 
 fn main() {
     // Set the locale to English for the demo, will look for the locale in the `locales` folder. You could also try using

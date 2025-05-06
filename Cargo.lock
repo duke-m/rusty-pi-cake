@@ -848,22 +848,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "leptos-demo"
-version = "0.2.1"
-dependencies = [
- "console_error_panic_hook",
- "js-sys",
- "leptos",
- "leptos_meta",
- "rust-i18n",
- "serde",
- "serde-wasm-bindgen",
- "wasm-bindgen",
- "web-sys",
- "web-time",
-]
-
-[[package]]
 name = "leptos_config"
 version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1425,6 +1409,22 @@ name = "rustversion"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eded382c5f5f786b989652c49544c4877d9f015cc22e145a5ea8ea66c2921cd2"
+
+[[package]]
+name = "rusty_pi_cake"
+version = "0.2.1"
+dependencies = [
+ "console_error_panic_hook",
+ "js-sys",
+ "leptos",
+ "leptos_meta",
+ "rust-i18n",
+ "serde",
+ "serde-wasm-bindgen",
+ "wasm-bindgen",
+ "web-sys",
+ "web-time",
+]
 
 [[package]]
 name = "ryu"
