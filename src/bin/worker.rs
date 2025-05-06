@@ -3,7 +3,7 @@
 
 #[cfg(debug_assertions)]
 use leptos::logging::log;
-use leptos_demo::{
+use rusty_pi_cake::{
     laborer::*,
     types::{TApproximation, TPrecision},
 };

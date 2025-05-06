@@ -80,8 +80,8 @@ make build
 The compiled assets will be available in the `dist` directory and will look similar to this (doing a `ls -1`):
 ```sh
 index.html
-leptos-demo-2ac9daeecafecafe_bg.wasm
-leptos-demo-2ac9daeecafecafe.js
+rusty-pi-cake-2ac9daeecafecafe_bg.wasm
+rusty-pi-cake-2ac9daeecafecafe.js
 style-5ef594c3beefbeef.css
 WebAssembly_Logo.svg
 worker_bg.wasm
