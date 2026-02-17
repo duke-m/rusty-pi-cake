@@ -1,0 +1,103 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      tailwind_install_method:
+        description: 'Install Tailwind via'
+        required: false
+        default: 'binary'
+        type: choice
+        options:
+          - binary
+          - npm
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+env:
+  CARGO_TERM_COLOR: always
+  TRUNK_VERSION: "0.21.13"
+  TAILWIND_VERSION: "4.1.3"
+  PUBLIC_URL: "https://duke-m.github.io/rusty-pi-cake/"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      TAILWIND_INSTALL_METHOD: ${{ github.event.inputs.tailwind_install_method || 'binary' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run workspace tests
+        run: cargo test
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          toolchain: stable-x86_64-unknown-linux-gnu
+          components: rust-src
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - name: Create ci-tools directory
+        run: mkdir ci-tools
+
+      - name: Install Tailwind via NPM
+        if: ${{ env.TAILWIND_INSTALL_METHOD == 'npm' }}
+        run: npm install -g tailwindcss@${{ env.TAILWIND_VERSION }}
+
+      - name: Download Tailwind binary
+        if: ${{ env.TAILWIND_INSTALL_METHOD != 'npm' }}
+        run: |
+          wget -q -O ci-tools/tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/download/v${{ env.TAILWIND_VERSION }}/tailwindcss-linux-x64
+          chmod +x ci-tools/tailwindcss
+
+      - name: Download and install Trunk binary
+        run: |
+          wget -qO- https://github.com/trunk-rs/trunk/releases/download/v${{ env.TRUNK_VERSION }}/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
+          mv trunk ci-tools
+          chmod +x ci-tools/trunk
+
+      - name: Set PATH to ci-tools
+        run: echo "PATH=$(pwd)/ci-tools:$PATH" >> $GITHUB_ENV
+
+      - name: Ensure tools exist
+        run: |
+          which tailwindcss || (echo "❌ tailwindcss not found!" && exit 1)
+          test -f ci-tools/trunk || (echo "❌ trunk not found!" && exit 1)
+
+      - name: Build with Trunk
+        run: trunk build --release --public-url ${{ env.PUBLIC_URL }}
+
+      - name: Check dist exists
+        run: test -d dist || (echo "❌ dist/ folder not found!" && exit 1)
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
