@@ -3,6 +3,8 @@
 ![Rusty Pi](https://github.com/user-attachments/assets/64240465-e471-4637-a17e-6cbb64eaafe1)
 # Pi Cake: Full Rust WebAssembly Stack Demonstration with a WASM Worker
 
+<img width="1536" height="1024" alt="rusteee" src="https://github.com/user-attachments/assets/152a218b-72a4-4b53-b0c1-2e8b76f64bd6" />
+
 > [!WARNING]
 > How long does it take to measure &pi;?
 
